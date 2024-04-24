@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}History{% endblock %}
+
+{% block content %}
+<br />
+<h1>Here you can view all your transfers!</h1>
+<br />
+<ul class="list-group list-group-flash" id="transfers">
+  {% for transfer in user.transfers %}
+  <li class="list-group-item">{{ transfer.title }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

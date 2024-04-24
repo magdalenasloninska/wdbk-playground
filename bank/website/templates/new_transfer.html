@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}New transfer{% endblock %}
+
+{% block content %}
+<br />
+<h1>Here you can send a new transfer!</h1>
+<br />
+<form method="POST">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <input
+      type="text"
+      class="form-control"
+      id="title"
+      name="title"
+      placeholder="Enter transfer title"
+    />
+  </div>
+  <div class="form-group">
+    <label for="amount">Amount</label>
+    <input
+      type="number"
+      class="form-control"
+      id="amount"
+      name="amount"
+      min="0"
+      max="1000"
+      value=0
+    />
+  </div>
+  <br />
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Send transfer</button>
+  </div>
+</form>
+{% endblock %}
