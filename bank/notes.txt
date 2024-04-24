@@ -1,0 +1,17 @@
+Improvements:
+1. If a user signs up successfully they should be redirected to the homepage (currently login page)?
+2. Displaying transfer history (chronologically by default)
+3. Add sections to navbar: "Send transfer", "History"
+4. ...
+
+Ad 1. The order is actually:
+ - Sign up page
+ - (Upon success) redirect to homepage
+ - the user is technically still not logged in, so redirect to login page
+ - (Upon successful login) homepage
+
+Ad 3. We would like to separate the existing hompage into to separate sections:
+ - "Send transfer" with a form that contains transfer title, recipient and amount as well as displays us as the sender.
+   Submitting this form should result in a redirect to confirm our data.
+   Confirming this information is the final step (here we can see what's been sent to the server).
+ - "History" is just a more advanced table.

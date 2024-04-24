@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1>This is the home page (for transfers)!</h1>
+<ul class="list-group list-group-flash" id="transfers">
+  {% for transfer in user.transfers %}
+  <li class="list-group-item">{{ transfer.title }}</li>
+  {% endfor %}
+</ul>
+<form method="POST">
+  <textarea name="title" id="title" class="form-control"></textarea>
+  <br/>
+  <div align="center">
+    <button type="submit" class="btn btn-primary">Send transfer</button>
+  </div>
+</form>
+{% endblock %}
