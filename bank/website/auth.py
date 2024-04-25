@@ -3,7 +3,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from .models import User
-from . import db
+from . import db, ph
 
 auth = Blueprint('auth', __name__)
 
@@ -11,15 +11,16 @@ auth = Blueprint('auth', __name__)
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
-        password = request.form.get('password')
+        password = request.form.get('password', '')
 
         user = User.query.filter_by(email=email).first()
         if user:
-            if check_password_hash(user.password, password):
+            try:
+                ph.verify(user.password, password)
                 flash('Logged in successfully!', category='success')
                 login_user(user, remember=True)
                 return redirect(url_for('views.home'))
-            else:
+            except:
                 flash('Incorrect password, try again.', category='error')
         else:
             flash("User doesn't exist.", category='error')
@@ -47,11 +48,10 @@ def sign_up():
         elif password1 != password2:
             flash("Passwords don't match!", category='error')
         else:
-            # Add user to database
             new_user = User(
                     email=email,
                     username=username,
-                    password=generate_password_hash(password1, method='pbkdf2:sha256'))
+                    password=ph.hash(password1))
 
             db.session.add(new_user)
             db.session.commit()

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}New transfer{% endblock %}
+{% block title %}Confirmation{% endblock %}
 
 {% block content %}
 <br />
-<h1>Here you can send a new transfer!</h1>
+<h1>Here you can confirm the info of your new transfer</h1>
 <br />
 <form method="POST">
   <div class="form-group">
@@ -14,7 +14,8 @@
       class="form-control"
       id="title"
       name="title"
-      placeholder="Enter transfer title"
+      value="{{ title }}"
+      readonly
     />
   </div>
   <div class="form-group">
@@ -24,14 +25,14 @@
       class="form-control"
       id="amount"
       name="amount"
-      min="0"
-      max="1000"
-      value=0
+      value="{{ amount }}"
+      readonly
     />
   </div>
   <br />
-  <div align="center">
-    <button type="submit" class="btn btn-primary">OK</button>
+  <div class="button-container" align="center">
+    <a href="javascript:history.back()" class="button">Go back</a>
+    <button type="submit" class="btn btn-primary">Send transfer</button>
   </div>
 </form>
 {% endblock %}

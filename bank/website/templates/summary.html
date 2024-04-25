@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Summary{% endblock %}
+
+{% block content %}
+<br />
+<h1>The following transfer has just been sent:</h1>
+<br />
+<table>
+    <tr>
+        <th>Field</th>
+        <th>Info</th>
+    </tr>
+    <tr>
+        <td>Title</td>
+      <td>{{ title }}</td>
+    </tr>
+    <tr>
+        <td>Amount</td>
+      <td>{{ amount }}</td>
+    </tr>
+</table>
+{% endblock %}

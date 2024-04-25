@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, render_template, request, flash
+from flask import Blueprint, flash, redirect, render_template, request, flash, url_for
 from flask_login import login_required, current_user
 
 from .models import Transfer
@@ -19,17 +19,50 @@ def new_transfer():
         title = request.form.get('title')
         amount = request.form.get('amount')
 
-        if len(title) < 3:
+        if title is None or len(title) < 3:
             flash('Transfer title is too short!', category='error')
         else:
-            new_transfer = Transfer(
-                    title=title,
-                    sender=current_user.id,
-                    amount=amount)
-            db.session.add(new_transfer)
-            db.session.commit()
+            return redirect(url_for('views.confirmation',
+                                    user=current_user,
+                                    title=title,
+                                    amount=amount))
+            
+    return render_template("new_transfer.html",
+                           user=current_user)
 
-    return render_template("new_transfer.html", user=current_user)
+@views.route('/confirmation', methods=['GET', 'POST'])
+@login_required
+def confirmation():
+    title = request.args.get('title')
+    amount = request.args.get('amount')
+
+    if request.method == 'POST':
+
+        new_transfer = Transfer(
+                title=title,
+                sender=current_user.id,
+                amount=amount)
+        
+        db.session.add(new_transfer)
+        db.session.commit()
+
+        return redirect(url_for('views.summary',
+                                user=current_user,
+                                title=new_transfer.title,
+                                amount=new_transfer.amount))
+
+    return render_template("confirmation.html",
+                           user=current_user,
+                           title=title,
+                           amount=amount)
+
+@views.route('/summary', methods=['GET'])
+@login_required
+def summary():
+    return render_template("summary.html",
+                           user=current_user,
+                           title=request.args.get('title'),
+                           amount=request.args.get('amount'))
 
 @views.route('/history', methods=['GET'])
 @login_required
