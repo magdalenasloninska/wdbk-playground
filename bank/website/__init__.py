@@ -1,14 +1,27 @@
-from os import path
+import os
 
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_manager
 from argon2 import PasswordHasher
+from oauthlib.oauth2 import WebApplicationClient
+import requests
 
 
 db = SQLAlchemy()
 ph = PasswordHasher()
 DB_NAME = "database.db"
+
+# OAuth2 initial configuration
+GOOGLE_CLIENT_ID = os.environ.get("GOOGLE_CLIENT_ID", '')
+GOOGLE_CLIENT_SECRET = os.environ.get("GOOGLE_CLIENT_SECRET", '')
+GOOGLE_DISCOVERY_URL = ("https://accounts.google.com/.well-known/openid-configuration")
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
+
+def get_google_provider_cfg():
+    return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 def create_app():
     app = Flask(__name__)

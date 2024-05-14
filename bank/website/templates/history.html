@@ -6,9 +6,18 @@
 <br />
 <h1>Here you can view all your transfers!</h1>
 <br />
-<ul class="list-group list-group-flash" id="transfers">
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Amount</th>
+    <th>Date</th>
+  </tr>
   {% for transfer in user.transfers %}
-  <li class="list-group-item">{{ transfer.title }}</li>
+  <tr>
+    <td>{{ transfer.title }}</td>
+    <td>{{ transfer.amount }}</td>
+    <td>{{ transfer.date }}</td>
+  </tr>
   {% endfor %}
-</ul>
+</table>
 {% endblock %}

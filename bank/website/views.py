@@ -17,15 +17,21 @@ def home():
 def new_transfer():
     if request.method == 'POST':
         title = request.form.get('title')
-        amount = request.form.get('amount')
+        amount = int(request.form.get('amount', 0))
+        recipient = request.form.get('recipient')
 
         if title is None or len(title) < 3:
             flash('Transfer title is too short!', category='error')
+        elif amount < 0 or amount > 1000:
+            flash('The maximum amount is 1000 units!', category='error')
+        elif recipient is None or len(recipient) < 1:
+            flash('You must enter a recipient!', category='error')
         else:
             return redirect(url_for('views.confirmation',
                                     user=current_user,
                                     title=title,
-                                    amount=amount))
+                                    amount=amount,
+                                    recipient=recipient))
             
     return render_template("new_transfer.html",
                            user=current_user)
@@ -35,6 +41,7 @@ def new_transfer():
 def confirmation():
     title = request.args.get('title')
     amount = request.args.get('amount')
+    recipient = request.args.get('recipient')
 
     if request.method == 'POST':
 
@@ -49,12 +56,14 @@ def confirmation():
         return redirect(url_for('views.summary',
                                 user=current_user,
                                 title=new_transfer.title,
-                                amount=new_transfer.amount))
+                                amount=new_transfer.amount,
+                                recipient=recipient))
 
     return render_template("confirmation.html",
                            user=current_user,
                            title=title,
-                           amount=amount)
+                           amount=amount,
+                           recipient=recipient)
 
 @views.route('/summary', methods=['GET'])
 @login_required
@@ -62,7 +71,8 @@ def summary():
     return render_template("summary.html",
                            user=current_user,
                            title=request.args.get('title'),
-                           amount=request.args.get('amount'))
+                           amount=request.args.get('amount'),
+                           recipient=request.args.get('recipient'))
 
 @views.route('/history', methods=['GET'])
 @login_required
