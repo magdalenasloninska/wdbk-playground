@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<br />
+<h1>Here you can set up 2FA for your account!</h1>
+<h3>Instructions:</h3>
+<ul>
+  <li>Download an authenticator app (such as <a href="https://apps.apple.com/pl/app/2fa-authenticator-2fas/id1217793794?l=pl">2FAS</a>) on your mobile phone.</li>
+  <li>Set up a new authentication token.</li>
+  <li>Once you have scanned the QR code, please click <a href="{{ url_for('views.setup_2fa') }}">here.</li>
+</ul>
+<br />
+
+<div>
+    <main class="form-signin w-100 m-auto">
+      <form role="form">
+        <div class="text-center">
+          <img src="data:image/png;base64, {{ qr_image }}" alt="Secret Token" style="width:200px;height:200px"/>
+        </div>
+        <br />
+        <div class="form-group">
+          <label for="secret">Secret Token</label>
+          <input type="text" class="form-control" id="secret" value="{{ secret }}" readonly>
+        </div>
+      </form>
+    </main>
+</div>
+
+{% endblock %}

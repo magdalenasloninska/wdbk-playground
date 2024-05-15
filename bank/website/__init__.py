@@ -3,13 +3,24 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, login_manager
+from flask_migrate import Migrate
 from argon2 import PasswordHasher
 from oauthlib.oauth2 import WebApplicationClient
 import requests
+from sqlalchemy import MetaData
 
 
-db = SQLAlchemy()
+naming_convention = {
+    "ix": 'ix_%(column_0_label)s',
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(column_0_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+}
+
+db = SQLAlchemy(metadata=MetaData(naming_convention=naming_convention))
 ph = PasswordHasher()
+APP_NAME = "Bank"
 DB_NAME = "database.db"
 
 # OAuth2 initial configuration
@@ -28,6 +39,8 @@ def create_app():
     app.config['SECRET_KEY'] = 'guma balonowa'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app)
+
+    migrate = Migrate(app, db, render_as_batch=True)
     
     from .views import views
     from .auth import auth
@@ -47,6 +60,6 @@ def create_app():
 
     @login_manager.user_loader
     def load_user(id):
-        return User.query.get(int(id))
+        return User.query.get(id)
 
     return app

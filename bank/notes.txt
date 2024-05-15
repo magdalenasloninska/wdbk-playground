@@ -1,3 +1,5 @@
+====== 29.04.2024 ======
+
 Improvements:
 1. If a user signs up successfully they should be redirected to the homepage (currently login page)?
 2. Displaying transfer history (chronologically by default)
@@ -15,3 +17,14 @@ Ad 3. We would like to separate the existing hompage into to separate sections:
    Submitting this form should result in a redirect to confirm our data.
    Confirming this information is the final step (here we can see what's been sent to the server).
  - "History" is just a more advanced table.
+
+
+ ====== 14.05.2024 ======
+
+Google login requires a few steps:
+1. Register the app with Google and generate appropriate credentials (Client ID)
+2. Add new functions to auth.py (login + callback)
+3. ...
+
+For now let's say that logging in via Google is an alternate path (separate link on navbar).
+

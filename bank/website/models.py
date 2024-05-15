@@ -2,8 +2,9 @@ from datetime import timezone
 
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+import pyotp
 
-from . import db
+from . import db, APP_NAME
 
 
 class Transfer(db.Model):
@@ -20,4 +21,15 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(120))
     password = db.Column(db.String(120))
     transfers = db.relationship('Transfer', primaryjoin='User.id == Transfer.sender', backref='user')
+    is_2fa_enabled = db.Column(db.Boolean, default=False)
+    secret_token = db.Column(db.String, unique=True)
+
+    def get_authentication_setup_uri(self):
+        return pyotp.totp.TOTP(self.secret_token).provisioning_uri(
+                name=self.username,
+                issuer_name=APP_NAME)
+
+    def is_otp_valid(self, user_otp):
+        totp = pyotp.parse_uri(self.get_authentication_setup_uri())
+        return totp.verify(user_otp)
 

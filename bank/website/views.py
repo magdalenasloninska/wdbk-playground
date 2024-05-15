@@ -2,6 +2,7 @@ from flask import Blueprint, flash, redirect, render_template, request, flash, u
 from flask_login import login_required, current_user
 
 from .models import Transfer
+from .utils import get_b64encoded_qr_image
 from . import db
 
 
@@ -78,3 +79,11 @@ def summary():
 @login_required
 def history():
     return render_template("history.html", user=current_user)
+
+@views.route('/setup-2fa')
+@login_required
+def setup_2fa():
+    secret = current_user.secret_token
+    uri = current_user.get_authentication_setup_uri()
+    base64_qr_image = get_b64encoded_qr_image(uri)
+    return render_template("setup_2fa.html", user=current_user, secret=secret, qr_image=base64_qr_image)

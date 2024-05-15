@@ -68,21 +68,23 @@ def callback():
     userinfo_response = requests.get(uri, headers=headers, data=body)
 
     if userinfo_response.json().get("email_verified"):
-        unique_id = userinfo_response.json()["sub"]
         users_email = userinfo_response.json()["email"]
-        picture = userinfo_response.json()["picture"]
         users_name = userinfo_response.json()["given_name"]
     else:
         return "User email not available or not verified by Google.", 400
 
-    user = User(
+    google_user = User(
             username=users_name,
             email=users_email)
 
-    if not User.query.filter_by(email=user.email).first():
-        db.session.add(user)
+    user = User.query.filter_by(email=google_user.email).first()
+    print(f"LOOK HERE! DB check returned: {user}")
+
+    if not user:
+        db.session.add(google_user)
         db.session.commit()
         flash('Account created (via Google)!', category='success')
+        user = User.query.filter_by(email=google_user.email).first()
 
     login_user(user)
     
