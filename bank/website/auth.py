@@ -2,7 +2,7 @@ import json
 
 from flask import Blueprint, redirect, render_template, request, flash, url_for
 from flask_login import login_user, login_required, logout_user, current_user
-from werkzeug.security import generate_password_hash, check_password_hash
+from argon2.exceptions import VerifyMismatchError
 import requests
 import pyotp
 
@@ -16,20 +16,62 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password', '')
-
         user = User.query.filter_by(email=email).first()
+
         if user:
             try:
                 ph.verify(user.password, password)
-                flash('Logged in successfully!', category='success')
-                login_user(user, remember=True)
-                return redirect(url_for('views.home'))
-            except:
+                print(f"LOOK HERE! User found ({type(user)}): {user.email}, {user.username}, {user.is_2fa_enabled} ({type(user.is_2fa_enabled)})")
+                var_2fa = user.is_2fa_enabled
+
+                if var_2fa:
+                    return redirect(url_for('auth.verify_2fa_token', email=email))
+                else:
+                    flash('Logged in successfully!', category='success')
+                    login_user(user, remember=True)
+                    return redirect(url_for('views.home'))
+            except VerifyMismatchError:
                 flash('Incorrect password, try again.', category='error')
+            except Exception as e:
+                print(e)
+                flash('Unknown error, please contact the admin.', category='error')
         else:
             flash("User doesn't exist.", category='error')
     
     return render_template("login.html", user=current_user)
+
+
+@auth.route('/verify-2fa-token', methods=['GET', 'POST'])
+def verify_2fa_token():
+    email = request.args.get('email')
+    user = User.query.filter_by(email=email).first()
+
+    if current_user.is_authenticated:
+        user = current_user
+
+    if request.method == 'POST':
+        otp = request.form.get('otp', '')
+
+        if len(otp) == 6 and user.is_otp_valid(otp):
+            if user.is_2fa_enabled:
+                login_user(user, remember=True)
+                flash("Logged in successfully (via 2FA)!", category='success')
+                return redirect(url_for('views.home'))
+            else:
+                try:
+                    user.is_2fa_enabled = True
+                    db.session.commit() 
+                    flash("2FA setup is done!", category='success')
+                    return redirect(url_for('views.home', user=user))
+                except Exception:
+                    db.session.rollback()
+                    flash("2FA setup failed. Please try again.", category='error')
+                    return redirect(url_for('auth.verify_2fa_token'))
+        else:
+            flash("Invalid OTP. Please try again.", category='error')
+            return redirect(url_for('auth.verify_2fa_token', email=email))
+
+    return render_template("verify_2fa_token.html", user=current_user, email=email)
 
 @auth.route('/google-login')
 def google_login():

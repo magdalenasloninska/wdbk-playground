@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, request, flash, url_for
 from flask_login import login_required, current_user
 
-from .models import Transfer
+from .models import User, Transfer
 from .utils import get_b64encoded_qr_image
 from . import db
 
@@ -88,29 +88,3 @@ def setup_2fa():
     base64_qr_image = get_b64encoded_qr_image(uri)
     return render_template("setup_2fa.html", user=current_user, secret=secret, qr_image=base64_qr_image)
 
-@views.route('/verify-2fa-token', methods=['GET', 'POST'])
-def verify_2fa_token():
-    otp = request.form.get('otp', '')
-    if len(otp) == 6:
-        if current_user.is_otp_valid(otp):
-            if current_user.is_2fa_enabled:
-                flash("2FA verification successful. You are logged in!", category="success")
-                return redirect(url_for('views.home'))
-            else:
-                try:
-                    current_user.is_2fa_enabled = True
-                    db.session.commit()
-                    flash("2FA setup successful. You are logged in!", category="success")
-                    return redirect(url_for('views.home'))
-                except Exception:
-                    db.session.rollback()
-                    flash("2FA setup failed. Please try again.", category="danger")
-                    return redirect(url_for('views.verify_2fa_token'))
-        else:
-            flash("Invalid OTP. Please try again.", category="danger")
-            return redirect(url_for('views.verify_2fa_token'))
-    else:
-        if not current_user.is_2fa_enabled:
-            flash(
-                "You have not enabled 2-Factor Authentication. Please enable it first.", category="info")
-        return render_template("verify_2fa_token.html", user=current_user, form=request.form)
