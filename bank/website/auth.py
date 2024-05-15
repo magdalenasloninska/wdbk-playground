@@ -4,6 +4,7 @@ from flask import Blueprint, redirect, render_template, request, flash, url_for
 from flask_login import login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import requests
+import pyotp
 
 from .models import User
 from . import db, ph, client, get_google_provider_cfg, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
@@ -75,10 +76,10 @@ def callback():
 
     google_user = User(
             username=users_name,
-            email=users_email)
+            email=users_email,
+            secret_token = pyotp.random_base32())
 
     user = User.query.filter_by(email=google_user.email).first()
-    print(f"LOOK HERE! DB check returned: {user}")
 
     if not user:
         db.session.add(google_user)
@@ -114,7 +115,8 @@ def sign_up():
             new_user = User(
                     email=email,
                     username=username,
-                    password=ph.hash(password1))
+                    password=ph.hash(password1),
+                    secret_token = pyotp.random_base32())
 
             db.session.add(new_user)
             db.session.commit()

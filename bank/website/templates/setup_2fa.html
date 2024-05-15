@@ -1,15 +1,19 @@
 {% extends "base.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}Setup 2FA{% endblock %}
 
 {% block content %}
 <br />
 <h1>Here you can set up 2FA for your account!</h1>
+
+{% if user.is_2fa_enabled: %}
+<h3>You've already enabled 2FA.</h3>
+{% else %}
 <h3>Instructions:</h3>
 <ul>
   <li>Download an authenticator app (such as <a href="https://apps.apple.com/pl/app/2fa-authenticator-2fas/id1217793794?l=pl">2FAS</a>) on your mobile phone.</li>
   <li>Set up a new authentication token.</li>
-  <li>Once you have scanned the QR code, please click <a href="{{ url_for('views.setup_2fa') }}">here.</li>
+  <li>Once you have scanned the QR code, please click <a href="{{ url_for('views.verify_2fa_token') }}">here.</li>
 </ul>
 <br />
 
@@ -27,5 +31,6 @@
       </form>
     </main>
 </div>
+{% endif %}
 
 {% endblock %}

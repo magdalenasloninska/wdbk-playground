@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Verify 2FA token{% endblock %}
+
+{% block content %}
+<br />
+<h1>2FA token verification happens here!</h1>
+<br />
+<form method="POST">
+  <div class="form-group">
+    <label for="email">Enter your OTP:</label>
+    <input
+      type="text"
+      class="form-control"
+      id="otp"
+      name="otp"
+      placeholder="XXX-XXX"
+    />
+  </div>
+  <br />
+  <button type="submit" class="btn btn-primary">OK</button>
+</form>
+{% endblock %}
