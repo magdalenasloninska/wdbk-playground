@@ -12,6 +12,7 @@ class Transfer(db.Model):
     recipient = db.Column(db.Integer, db.ForeignKey('user.id'))
     amount = db.Column(db.Integer)
     date = db.Column(db.DateTime(timezone=True), default=func.now())
+    is_executed = db.Column(db.Boolean, default=False)
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)

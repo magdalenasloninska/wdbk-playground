@@ -11,14 +11,23 @@
     <th>Title</th>
     <th>Amount</th>
     <th>Date</th>
-    <th>Execute?</th>
+    <th>Action</th>
   </tr>
   {% for transfer in transfers %}
   <tr>
     <td>{{ transfer.title }}</td>
     <td>{{ transfer.amount }}</td>
     <td>{{ transfer.date }}</td>
-    <td></td>
+    <td>
+      {% if transfer.is_executed %}
+        <button class="btn btn-primary" disabled>Done</button>
+      {% else %}
+        <form method="POST">
+          <input type="hidden" name="transfer_id" value="{{ transfer.id }}">
+          <button type="submit" class="btn btn-primary">Execute</button>
+        </form>
+      {% endif %}
+    </td>
   </tr>
   {% endfor %}
 </table>

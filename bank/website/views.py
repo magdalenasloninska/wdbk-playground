@@ -80,9 +80,15 @@ def summary():
 def history():
     return render_template("history.html", user=current_user)
 
-@views.route('/execute-transfers', methods=['GET'])
+@views.route('/execute-transfers', methods=['GET', 'POST'])
 @login_required
 def execute_transfers():
+    if request.method == 'POST':
+        selected_transfer_id = request.form.get('transfer_id')
+        selected_transfer = Transfer.query.filter_by(id=selected_transfer_id).first()
+        selected_transfer.is_executed = True
+        db.session.commit()
+
     transfers = Transfer.query.all()
     return render_template("execute_transfers.html", user=current_user, transfers=transfers)
 
