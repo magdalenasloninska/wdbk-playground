@@ -80,6 +80,12 @@ def summary():
 def history():
     return render_template("history.html", user=current_user)
 
+@views.route('/execute-transfers', methods=['GET'])
+@login_required
+def execute_transfers():
+    transfers = Transfer.query.all()
+    return render_template("execute_transfers.html", user=current_user, transfers=transfers)
+
 @views.route('/setup-2fa')
 @login_required
 def setup_2fa():

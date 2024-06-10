@@ -37,3 +37,13 @@ And another: test2@mail (password: test)
 Regarding 2FA there are two workflows we have to implement:
 1. setting up 2FA (as a logged-in user) when it was not previously enabled and entering the OTP for the first time
 2. using 2FA every time the user wants to log in after that
+
+
+====== 10.06.2024 ======
+
+How to tackle adding an admin role (that would have to the ability to actually execute transfers)?
+
+We know we'll have to modify some of our models:
+ - Transfer: add boolean field for whether the transfer has already been executed or if it's still waiting
+
+ New user for testing bank admin privileges: admin@mail (password: test)

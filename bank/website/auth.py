@@ -146,6 +146,7 @@ def sign_up():
         username = request.form.get('username')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
+        admin = request.form.get('admin') == 'on'
         
         user = User.query.filter_by(email=email).first()
 
@@ -158,7 +159,8 @@ def sign_up():
                     email=email,
                     username=username,
                     password=ph.hash(password1),
-                    secret_token = pyotp.random_base32())
+                    secret_token=pyotp.random_base32(),
+                    is_bank_admin=admin)
 
             db.session.add(new_user)
             db.session.commit()

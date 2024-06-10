@@ -21,6 +21,7 @@ class User(db.Model, UserMixin):
     transfers = db.relationship('Transfer', primaryjoin='User.id == Transfer.sender', backref='user')
     is_2fa_enabled = db.Column(db.Boolean, default=False)
     secret_token = db.Column(db.String, unique=True)
+    is_bank_admin = db.Column(db.Boolean, default=False)
 
     def get_authentication_setup_uri(self):
         return pyotp.totp.TOTP(self.secret_token).provisioning_uri(

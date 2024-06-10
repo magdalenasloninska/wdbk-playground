@@ -5,5 +5,10 @@
 {% block content %}
 <br />
 <h1>Welcome to Bank, {{ user.username }}!</h1>
-<h3>How can we hack you?</h3>
+
+{% if user.is_bank_admin %}
+    <h3>You're a bank administrator, ready to do some hacking?</h3>
+{% else %}
+    <h3>How can we hack you?</h3>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Execute transfers{% endblock %}
+
+{% block content %}
+<br />
+<h1>Here you can execute pending transfers!</h1>
+<br />
+<table>
+  <tr>
+    <th>Title</th>
+    <th>Amount</th>
+    <th>Date</th>
+    <th>Execute?</th>
+  </tr>
+  {% for transfer in transfers %}
+  <tr>
+    <td>{{ transfer.title }}</td>
+    <td>{{ transfer.amount }}</td>
+    <td>{{ transfer.date }}</td>
+    <td></td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}
