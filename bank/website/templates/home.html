@@ -11,4 +11,9 @@
 {% else %}
     <h3>How can we hack you?</h3>
 {% endif %}
+
+<script>
+    var activateSession = {{ activate | tojson }};
+    checkSessionStorage(activateSession);
+</script>
 {% endblock %}

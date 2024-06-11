@@ -1,10 +1,11 @@
 import json
 
-from flask import Blueprint, redirect, render_template, request, flash, url_for
+from flask import Blueprint, redirect, render_template, request, flash, url_for, session
 from flask_login import login_user, login_required, logout_user, current_user
 from argon2.exceptions import VerifyMismatchError
 import requests
 import pyotp
+import uuid
 
 from .models import User
 from . import db, ph, client, get_google_provider_cfg, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
@@ -21,15 +22,14 @@ def login():
         if user:
             try:
                 ph.verify(user.password, password)
-                print(f"LOOK HERE! User found ({type(user)}): {user.email}, {user.username}, {user.is_2fa_enabled} ({type(user.is_2fa_enabled)})")
                 var_2fa = user.is_2fa_enabled
 
                 if var_2fa:
                     return redirect(url_for('auth.verify_2fa_token', email=email))
                 else:
                     flash('Logged in successfully!', category='success')
-                    login_user(user, remember=True)
-                    return redirect(url_for('views.home'))
+                    login_user(user)
+                    return redirect(url_for('views.home', activate=True))
             except VerifyMismatchError:
                 flash('Incorrect password, try again.', category='error')
             except Exception as e:
@@ -55,6 +55,7 @@ def verify_2fa_token():
         if len(otp) == 6 and user.is_otp_valid(otp):
             if user.is_2fa_enabled:
                 login_user(user, remember=True)
+                # TODO: Add sessionStorage here as well!
                 flash("Logged in successfully (via 2FA)!", category='success')
                 return redirect(url_for('views.home'))
             else:

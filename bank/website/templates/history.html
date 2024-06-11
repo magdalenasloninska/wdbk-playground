@@ -11,13 +11,23 @@
     <th>Title</th>
     <th>Amount</th>
     <th>Date</th>
+    <th>Status</th>
   </tr>
   {% for transfer in user.transfers %}
   <tr>
     <td>{{ transfer.title }}</td>
     <td>{{ transfer.amount }}</td>
     <td>{{ transfer.date }}</td>
+    {% if transfer.is_executed %}
+      <td>Executed</td>
+    {% else %}
+      <td>Pending</td>
+    {% endif %}
   </tr>
   {% endfor %}
 </table>
+
+<script>
+  checkSessionStorage();
+</script>
 {% endblock %}

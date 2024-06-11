@@ -40,6 +40,19 @@
         margin-right: 10px;
       }
     </style>
+    <script>
+      function checkSessionStorage(activateSession=false) {
+        console.log(sessionStorage);
+
+        if (!sessionStorage.getItem('isBrowsingOrigin')) {
+          if (activateSession) {
+            sessionStorage.setItem('isBrowsingOrigin', true)
+          } else if (!window.location.href.includes('/warning')) {
+            window.location.href = '/warning';
+          }
+        }
+      }
+    </script>
   </head>
   <body>
     <nav class="navbar-expand-lg navbar-dark bg-dark">

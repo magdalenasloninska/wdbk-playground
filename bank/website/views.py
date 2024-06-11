@@ -1,4 +1,4 @@
-from flask import Blueprint, flash, redirect, render_template, request, flash, url_for
+from flask import Blueprint, flash, redirect, render_template, request, flash, url_for, session
 from flask_login import login_required, current_user
 
 from .models import User, Transfer
@@ -11,7 +11,7 @@ views = Blueprint('views', __name__)
 @views.route('/', methods=['GET', 'POST'])
 @login_required
 def home():
-    return render_template("home.html", user=current_user)
+    return render_template("home.html", user=current_user, activate=request.args.get('activate'))
 
 @views.route('/new-transfer', methods=['GET', 'POST'])
 @login_required
@@ -100,3 +100,6 @@ def setup_2fa():
     base64_qr_image = get_b64encoded_qr_image(uri)
     return render_template("setup_2fa.html", user=current_user, secret=secret, qr_image=base64_qr_image)
 
+@views.route('/warning')
+def warning():
+    return render_template("warning.html", user=current_user)
