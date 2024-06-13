@@ -8,6 +8,7 @@
 <br />
 <table>
   <tr>
+    <th>#</th>
     <th>Title</th>
     <th>Amount</th>
     <th>Date</th>
@@ -15,6 +16,7 @@
   </tr>
   {% for transfer in user.transfers %}
   <tr>
+    <td class="counterCell"></td>
     <td>{{ transfer.title }}</td>
     <td>{{ transfer.amount }}</td>
     <td>{{ transfer.date }}</td>
