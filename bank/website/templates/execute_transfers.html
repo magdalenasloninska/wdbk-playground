@@ -8,14 +8,20 @@
 <br />
 <table>
   <tr>
-    <th>Title</th>
+    <th>#</th>
+    <th class="transferTitle">Title</th>
     <th>Amount</th>
     <th>Date</th>
     <th>Action</th>
   </tr>
   {% for transfer in transfers %}
   <tr>
-    <td>{{ transfer.title }}</td>
+    <td class="counterCell"></td>
+    <td class="transferTitle">
+      {% autoescape false %}
+      {{ transfer.title }}
+      {% endautoescape %}
+    </td>
     <td>{{ transfer.amount }}</td>
     <td>{{ transfer.date }}</td>
     <td>
@@ -24,7 +30,7 @@
       {% else %}
         <form method="POST">
           <input type="hidden" name="transfer_id" value="{{ transfer.id }}">
-          <button type="submit" class="btn btn-primary">Execute</button>
+          <button type="submit" class="btn btn-primary executeButton">Execute</button>
         </form>
       {% endif %}
     </td>
@@ -35,4 +41,5 @@
 <script>
   checkSessionStorage();
 </script>
+
 {% endblock %}
