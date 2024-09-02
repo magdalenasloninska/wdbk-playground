@@ -5,7 +5,7 @@ from flask_login import login_user, login_required, logout_user, current_user
 from argon2.exceptions import VerifyMismatchError
 import requests
 import pyotp
-import uuid
+from email_validator import validate_email, EmailNotValidError
 
 from .models import User
 from . import db, ph, client, get_google_provider_cfg, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
@@ -15,28 +15,35 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        email = request.form.get('email')
+        unsanitized_email = request.form.get('email')
         password = request.form.get('password', '')
-        user = User.query.filter_by(email=email).first()
+        
+        try:
+            unsanitized_email = unsanitized_email.split()[0]
+            email = validate_email(unsanitized_email).email
+            user = User.query.filter_by(email=email).first()
 
-        if user:
-            try:
-                ph.verify(user.password, password)
-                var_2fa = user.is_2fa_enabled
+            if user:
+                try:
+                    ph.verify(user.password, password)
+                    var_2fa = user.is_2fa_enabled
 
-                if var_2fa:
-                    return redirect(url_for('auth.verify_2fa_token', email=email))
-                else:
-                    flash('Logged in successfully!', category='success')
-                    login_user(user)
-                    return redirect(url_for('views.home', activate=True))
-            except VerifyMismatchError:
-                flash('Incorrect password, try again.', category='error')
-            except Exception as e:
-                print(e)
-                flash('Unknown error, please contact the admin.', category='error')
-        else:
-            flash("User doesn't exist.", category='error')
+                    if var_2fa:
+                        return redirect(url_for('auth.verify_2fa_token', email=email))
+                    else:
+                        flash('Logged in successfully!', category='success')
+                        login_user(user)
+                        return redirect(url_for('views.home', activate=True))
+                except VerifyMismatchError:
+                    flash('Incorrect password, try again.', category='error')
+                except Exception as e:
+                    print(e)
+                    flash('Unknown error, please contact the admin.', category='error')
+            else:
+                flash("User doesn't exist.", category='error')
+        
+        except EmailNotValidError:
+            flash('This email address is not valid, try again', category='error')
     
     return render_template("login.html", user=current_user)
 
@@ -143,29 +150,35 @@ def logout():
 @auth.route('/sign-up', methods=['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
-        email = request.form.get('email')
+        unsanitized_email = request.form.get('email')
         username = request.form.get('username')
         password1 = request.form.get('password1')
         password2 = request.form.get('password2')
         admin = request.form.get('admin') == 'on'
         
-        user = User.query.filter_by(email=email).first()
+        try:
+            unsanitized_email = unsanitized_email.split()[0]
+            email = validate_email(unsanitized_email).email
 
-        if user:
-            flash('User already exists.', category='error')
-        elif password1 != password2:
-            flash("Passwords don't match!", category='error')
-        else:
-            new_user = User(
-                    email=email,
-                    username=username,
-                    password=ph.hash(password1),
-                    secret_token=pyotp.random_base32(),
-                    is_bank_admin=admin)
+            user = User.query.filter_by(email=email).first()
 
-            db.session.add(new_user)
-            db.session.commit()
-            flash('Account created!', category='success')
-            return redirect(url_for('views.home'))
+            if user:
+                flash('User already exists.', category='error')
+            elif password1 != password2:
+                flash("Passwords don't match!", category='error')
+            else:
+                new_user = User(
+                        email=email,
+                        username=username,
+                        password=ph.hash(password1),
+                        secret_token=pyotp.random_base32(),
+                        is_bank_admin=admin)
+
+                db.session.add(new_user)
+                db.session.commit()
+                flash('Account created!', category='success')
+                return redirect(url_for('views.home'))
+        except EmailNotValidError:
+            flash('This email address is not valid, try again', category='error')
 
     return render_template("sign_up.html", user=current_user)
