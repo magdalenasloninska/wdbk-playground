@@ -4,6 +4,7 @@ from flask_login import login_required, current_user
 from .models import User, Transfer
 from .utils import get_b64encoded_qr_image
 from . import db
+from .fake_db_lib import add_record  # !!! DANGER !!!
 
 
 views = Blueprint('views', __name__)
@@ -51,7 +52,8 @@ def confirmation():
                 sender=current_user.id,
                 amount=amount)
         
-        db.session.add(new_transfer)
+        # db.session.add(new_transfer)
+        add_record(model='Transfer', record=new_transfer)  # !!! DANGER !!!
         db.session.commit()
 
         return redirect(url_for('views.summary',

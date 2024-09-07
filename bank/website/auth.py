@@ -9,6 +9,7 @@ from email_validator import validate_email, EmailNotValidError
 
 from .models import User
 from . import db, ph, client, get_google_provider_cfg, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET
+from .fake_db_lib import add_record
 
 auth = Blueprint('auth', __name__)
 
@@ -174,7 +175,8 @@ def sign_up():
                         secret_token=pyotp.random_base32(),
                         is_bank_admin=admin)
 
-                db.session.add(new_user)
+                # db.session.add(new_user)
+                add_record(model='User', record=new_user)  # !!! DANGER !!!
                 db.session.commit()
                 flash('Account created!', category='success')
                 return redirect(url_for('views.home'))
